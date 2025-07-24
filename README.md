@@ -1,11 +1,10 @@
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow) 
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)  
 ![PokéAPI](https://img.shields.io/badge/Pok%C3%A9API-REST-blue)
 
 # Pokedex DIO 
 <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" align="right" valign="middle" width="80" alt="Poké Ball" />
 
-Uma Pokédex elegante e eficiente construída durante a imersão “JS Developer” da Digital Innovation One.
-
+Uma Pokédex elegante e eficiente construída durante a imersão “JS Developer” da Digital Innovation One.  
 Unindo bons conceitos de front-end e boas práticas de desenvolvimento.
 
 <br>
@@ -14,63 +13,69 @@ Unindo bons conceitos de front-end e boas práticas de desenvolvimento.
 
 ## 🔖 Sumário
 
-1. [Visão Geral](#visão-geral)  
-2. [Principais Diferenciais](#principais-diferenciais)  
-3. [Funcionalidades](#funcionalidades)  
-4. [Tecnologias Utilizadas](#tecnologias-utilizadas)  
-5. [Estrutura de Pastas](#estrutura-de-pastas)  
-6. [Links Importantes](#links-importantes)  
-7. [Como Rodar](#como-rodar)  
-8. [Próximos Passos](#próximos-passos)  
+1. 📖 [Visão Geral](#visao-geral)  
+2. ✨ [Principais Diferenciais](#principais-diferenciais)  
+3. ⚡ [Funcionalidades](#funcionalidades)  
+4. 🛠️ [Tecnologias Utilizadas](#tecnologias-utilizadas)  
+5. 📂 [Estrutura de Pastas](#estrutura-de-pastas)  
+6. 🔗 [Links Importantes](#links-importantes)  
+7. 🚀 [Como Rodar](#como-rodar)  
+8. 🔜 [Próximos Passos](#proximos-passos)  
 
 ---
 
-## 🎯 Visão Geral <a id="visão-geral"></a>
+<a id="visao-geral"></a>
+## 📖 Visão Geral 
 
-Este projeto demonstra, de forma prática, como criar uma interface interativa consumindo a PokéAPI. A aplicação:
+Agora além de listar 151 Pokémon, você pode navegar entre todas as gerações oficiais do I ao VIII. A interface:
 
-- Foi versionada passo a passo no Git/GitHub, reforçando o aprendizado de controle de versão e fluxo de trabalho colaborativo. 
-- Segue arquitetura modular, separando modelo, API e lógica de interface.  
-- Utiliza caching inteligente para evitar requisições repetidas, garantindo performance e menor latência.  
-- Apresenta paginação sob demanda, removendo o botão de “Load More” automaticamente ao esgotar os 151 primeiros Pokémon.  
-- Adota mobile-first, assegurando que toda experiência seja otimizada para celulares antes de escalar para telas maiores.  
+- Exibe o nome da geração (“Kanto”, “Johto” etc.) dinamicamente.  
+- Oferece botões **Previous** / **Next** para alternar de região.  
+- Persiste sua última seleção em `localStorage`, retomando na próxima visita.  
+- Mostra um indicador de “Carregando...” e usa atraso suave para melhor UX.  
+- Continua usando caching em memória para não refazer requisições repetidas.  
 
-> **Dica:** a abordagem mobile-first garante que estilos e componentes sejam pensados primeiro para telas pequenas, antes de escalar para desktop.
-
-
----
-
-## 🎨 Principais Diferenciais <a id="principais-diferenciais"></a>
-
-- Design responsivo com grid e flexbox, adaptando-se a qualquer tamanho de tela.  
-- Paleta de cores inspirada nos tipos de Pokémon, reforçando identidade visual e acessibilidade.  
-- Código limpo e organizado, facilitando futuras manutenções ou extensões.  
-- Tratamento de erros e retornos de API garantem robustez mesmo em conexões instáveis.  
-- Uso de ES6+ para escrita de código mais concisa e legível.  
+ℹ️ **Nota de dados:** os números exibidos correspondem à Pokédex Nacional oficial. Alguns pokémon mais recentes (por exemplo, Sylveon e Meltan) podem acabar aparecendo em gerações ligeiramente diferentes da sua introdução original.
 
 ---
 
-## 🔥 Funcionalidades <a id="funcionalidades"></a>
+<a id="principais-diferenciais"></a>
+## ✨ Principais Diferenciais
 
-- Listagem paginada de Pokémon, garantindo carregamento rápido.  
-- Exibição de nome, número, tipos e arte oficial em alta resolução.  
-- Cache em memória para detalhes, reduzindo chamadas à PokéAPI.  
-- Remoção automática do controle de paginação ao atingir o limite predefinido.  
+- Navegação por geração com mapeamento automático de offset/limit.  
+- Cache dedicado por geração (Map) para performance extrema.  
+- Indicador de carregamento e delay controlado para feedback visual.  
+- Smooth scroll ao topo a cada mudança de geração.  
+- Botões estilizados com hover/active animations.  
+- Mobile-first: layouts e interações pensados para telas pequenas primeiro.  
 
 ---
 
-## 🛠️  Tecnologias Utilizadas <a id="tecnologias-utilizadas"></a>
+<a id="funcionalidades"></a>
+## ⚡ Funcionalidades
 
-- JavaScript moderno (ES6+)  
+- Next / Previous para avançar ou voltar entre as oito gerações.  
+- Persistência do índice de geração no `localStorage`.  
+- Carregamento assíncrono via `pokeApi.getPokemons(offset, limit)`.  
+- Cache de cada “paginação de geração” em memória.  
+- Indicador de loading e transição suave ao renderizar.  
+- Título dinâmico mostrando “<número> – Geração”.  
+
+---
+
+<a id="tecnologias-utilizadas"></a>
+## 🛠️ Tecnologias Utilizadas
+
+- JavaScript ES6+ (async/await, Map, fetch API)  
 - HTML5 semântico  
-- CSS3 com Normalize.css  
-- Grid e Flexbox para layout  
-- Fetch API com promises e tratamento de erros  
+- CSS3 (Grid, Flexbox, animações)  
+- Normalize.css  
 - PokéAPI  
 
 ---
 
-##  📁 Estrutura de Pastas <a id="estrutura-de-pastas"></a>
+<a id="estrutura-de-pastas"></a>
+## 📂 Estrutura de Pastas
 
 ```
 /
@@ -81,47 +86,60 @@ Este projeto demonstra, de forma prática, como criar uma interface interativa c
 │   └── js
 │       ├── poke-model.js
 │       ├── poke-api.js
-│       └── main.js
-├── index.html
+│       └── main.js       ← gerencia geração, botões e state
+├── index.html            ← inclui generationTitle e controls
 └── README.md
 ```
 
 ---
 
-## 🔗 Links Importantes <a id="links-importantes"></a>
+<a id="links-importantes"></a>
+## 🔗 Links Importantes
 
-- Documentação da PokéAPI: https://pokeapi.co/docs/v2  
-- Repositório base da DIO usado em aula: https://github.com/digitalinnovationone/js-developer-pokedex  
+- PokéAPI Docs: https://pokeapi.co/docs/v2  
+- Código base DIO em aula: https://github.com/digitalinnovationone/js-developer-pokedex  
 
 ---
 
-## 🖥️ Como Rodar <a id="como-rodar"></a>
+<a id="como-rodar"></a>
+## 🚀 Como Rodar
 
-1. Faça um fork do repositório para preservar seu histórico de commits.  
-2. Clone em sua máquina local:
-
+1. Fork + clone:  
    ```bash
    git clone https://github.com/seu-usuario/seu-repo.git
    cd seu-repo
    ```
-
-3. (Opcional) Inicie um servidor HTTP para servir os arquivos:
-
+2. (Opcional) Inicie servidor local:  
    ```bash
    npx http-server .
    ```
-
-4. Abra `index.html` no navegador (ou acesse `http://localhost:8080`).  
-5. Clique em **Load More** para carregar e explorar os primeiros 151 Pokémon.
----
-
-## 🔜 Próximos Passos <a id="próximos-passos"></a>
-
-Este é apenas o ponto de partida. Nas próximas etapas, planejo implementar:
-
-- Página de perfil detalhada de cada Pokémon, com estatísticas e evolução.  
-- Filtro e listagem por geração (Kanto, Johto etc.).  
+3. Abra no navegador `index.html` ou `http://localhost:8080`.  
+4. Use **Previous** / **Next** para navegar por gerações.  
 
 ---
 
-Aceito qualquer opinião, feedback ou contribuição. Bom estudo e bons códigos!
+<a id="proximos-passos"></a>
+## 🔜 Próximos Passos
+
+- Página de perfil de cada Pokémon (stats, evoluções).  
+- Filtros extras (por tipo, nome, geração secundária).  
+- Infinite scroll ou “Load more” híbrido.  
+- Testes automatizados e CI/CD.  
+
+---
+
+Se tiver sugestões, feedbacks ou PRs, estou aberto a toda contribuição!  
+
+---
+
+<a id="o-que-mudou"></a>
+## 📝 O que mudou (antes vs. agora)
+
+- Adição de `generationRanges` definindo offset e limit para cada geração (I a VIII).  
+- Inclusão de botões **Previous** e **Next** para navegação entre gerações.  
+- Elemento `<h2 id="generationTitle">` exibindo o nome e índice da geração atual.  
+- Uso de `Map` (`generationCache`) para cachear resultados de cada geração.  
+- Persistência de `currentGenIndex` no `localStorage`.  
+- Loading indicator (`#loadingIndicator`) + atraso (`delay(800)`) para feedback de carregamento.  
+- Smooth scroll ao topo a cada troca de geração.  
+- Estilos CSS atualizados: transições em botões, título de geração, classe `.hidden` para controle de visibilidade.
