@@ -37,7 +37,8 @@ function delay(ms) {
 // converte cada Pokémon em um <li>
 function convertPokemonToLi(pokemon) {
   return `
-      <li class="pokemon ${pokemon.types[0]}">
+    <li class="pokemon ${pokemon.type}">
+      <a href="pokemon.html?name=${pokemon.name}">
         <span class="number">#${pokemon.id}</span>
         <span class="name">${pokemon.name}</span>
         <div class="detail">
@@ -48,7 +49,8 @@ function convertPokemonToLi(pokemon) {
           </ol>
           <img src="${pokemon.cover}" alt="${pokemon.name}">
         </div>
-      </li>
+      </a>
+    </li>
     `;
 }
 
@@ -80,7 +82,7 @@ async function loadCurrentGeneration() {
 
   generationTitle.textContent = `${currentGenIndex + 1} - ${name}`;
   generationTitle.classList.remove("hidden");
-  
+
   pokemonList.innerHTML = pokemons.map(convertPokemonToLi).join("");
   updateButtons();
   localStorage.setItem("currentGenIndex", currentGenIndex);

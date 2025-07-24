@@ -1,4 +1,10 @@
-.pokemons {
+.pokemon a {
+  text-decoration: none;
+  background: transparent;
+}
+
+
+#pokemonList {
     display: grid;
     grid-template-columns: 1fr;
     margin: 0;
@@ -187,7 +193,6 @@ h2{
     margin-top: 1rem;
 }
 
-
 .hidden { 
     display: none; 
 }
@@ -199,19 +204,19 @@ h2{
   }
 
 @media screen and (min-width: 380px) {
-    .pokemons {
+    #pokemonList {
         grid-template-columns: 1fr 1fr;
     }
 }
 
 @media screen and (min-width: 576px) {
-    .pokemons {
+    #pokemonList {
         grid-template-columns: 1fr 1fr 1fr;
     }
 }
 
 @media screen and (min-width: 992px) {
-    .pokemons {
+    #pokemonList {
         grid-template-columns: 1fr 1fr 1fr 1fr;
     }
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil do Pokémon</title>
+
+    <link rel="stylesheet" href="assets/css/global.css" />
+    <link rel="stylesheet" href="assets/css/profile.css" />
+  </head>
+  <body>
+    <button id="backBtn">← Back</button>
+
+    <!-- Loader -->
+    <p id="loadingIndicator" class="loading">Carregando perfil...</p>
+
+    <section id="profile" class="profile hidden">
+      <h1 id="name"></h1>
+      <img id="cover" alt="" />
+      <ul id="types" class="types"></ul>
+      <dl id="details">
+        <dt>Height</dt>
+        <dd id="height"></dd>
+        <dt>Weight</dt>
+        <dd id="weight"></dd>
+        <dt>Abilities</dt>
+        <dd id="abilities"></dd>
+        <dt>Evolutions</dt>
+        <dd id="evolutions"></dd>
+      </dl>
+      <div id="evolutionChain" class="evolutions"></div>
+      <h2>Stats</h2>
+      <ul id="stats" class="stats"></ul>
+    </section>
+
+    <script src="assets/js/poke-model.js" defer></script>
+    <script src="assets/js/poke-api.js" defer></script>
+    <script src="assets/js/profile.js" defer></script>
+  </body>
+</html>
