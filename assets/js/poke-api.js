@@ -1,8 +1,7 @@
 const BASE_URL = "https://pokeapi.co/api/v2";
 const pokeApi = {};
-const detailsCache = new Map();
 
-// Helper para escolher a melhor imagem
+// Escolhe a melhor imagem.
 function getPokemonCover(sprites) {
   return (
     sprites.other?.dream_world?.front_default ||
@@ -12,7 +11,7 @@ function getPokemonCover(sprites) {
   );
 }
 
-// Converte o JSON de /pokemon para instância de Pokemon
+// Converte o JSON de /pokemon para instância de Pokemon.
 function convertPokeApiDetailToPokemon(detail) {
   const pokemon = new Pokemon();
   const types = detail.types.map((t) => t.type.name);
@@ -29,56 +28,53 @@ function convertPokeApiDetailToPokemon(detail) {
     name: s.stat.name,
     value: s.base_stat,
   }));
-  pokemon.abilities = detail.abilities
-    .map(slot => slot.ability.name);
+  pokemon.abilities = detail.abilities.map((slot) => slot.ability.name);
   return pokemon;
 }
 
-// Converte o JSON de /evolution-chain para uma lista de strings
+// Converte o JSON de /evolution-chain para uma lista de strings.
 function parseEvolutions(chainNode, list = []) {
   list.push(chainNode.species.name);
   chainNode.evolves_to.forEach((next) => parseEvolutions(next, list));
   return list;
 }
 
-// Busca detalhes completos
+// Busca detalhes completos.
 pokeApi.getDetailsPokemon = async (pokemon) => {
-  if (detailsCache.has(pokemon.name)) {
-    return detailsCache.get(pokemon.name);
-  }
+  const url =
+    typeof pokemon === "string"
+      ? `${BASE_URL}/pokemon/${pokemon}`
+      : pokemon.url;
 
-  const url = typeof pokemon === 'string'
-    ? `${BASE_URL}/pokemon/${pokemon}`
-    : pokemon.url;
-
-  // Pega /pokemon/{name}
+  // Detalhes básicos
   const detailRes = await fetch(url);
   const detail = await detailRes.json();
   const pkm = convertPokeApiDetailToPokemon(detail);
 
-  // Pega /pokemon-species/{name} para achar evolution_chain.url
+  // Espécies → evolução
   const speciesRes = await fetch(detail.species.url);
   const species = await speciesRes.json();
-  const evoChainUrl = species.evolution_chain.url;
-
-  // Pega /evolution-chain/{id}
-  const chainRes = await fetch(evoChainUrl);
+  const chainRes = await fetch(species.evolution_chain.url);
   const chainData = await chainRes.json();
   pkm.evolutions = parseEvolutions(chainData.chain);
 
-  detailsCache.set(pkm.name, pkm);
   return pkm;
 };
 
-pokeApi.getPokemons = (offset = 0, limit = 3) => {
+// Lista pokémons + detalhes
+pokeApi.getPokemons = async (offset = 0, limit = 3) => {
   const apiUrl = `${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`;
-  return fetch(apiUrl)
-    .then((response) => response.json())
-    .then((json) => json.results)
-    .then((list) => list.map(pokeApi.getDetailsPokemon))
-    .then((proms) => Promise.all(proms))
-    .catch((err) => {
-      console.error("Erro ao buscar lista de pokémons:", err);
-      return [];
-    });
+  try {
+    const response = await fetch(apiUrl);
+    const json = await response.json();
+    const results = json.results;
+
+    const detailPromises = results.map(pokeApi.getDetailsPokemon);
+    const pokemons = await Promise.all(detailPromises);
+
+    return pokemons;
+  } catch (err) {
+    console.error("Erro ao buscar lista de pokémons:", err);
+    return [];
+  }
 };
