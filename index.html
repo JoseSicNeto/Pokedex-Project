@@ -22,36 +22,42 @@
   </head>
 
   <body>
-    <section class="content">
-      <h1>Pokedex</h1>
-      <h2 id="generationTitle" class="hidden"></h2>
+    <div class="wrapper">
+      <header id="header"></header>
 
-      <ol id="pokemonList" class="pokemons">
-        <!--  Pokemons here  -->
-      </ol>
+      <section class="content">
+        <h1>Pokedex</h1>
+        <h2 id="generationTitle" class="hidden"></h2>
 
-      <nav aria-label="Paginação">
-        <ul class="pagination">
-          <li><button id="firstButton" type="button">First</button></li>
-          <li><button id="previousButton" type="button">Previous</button></li>
+        <ol id="pokemonList" class="pokemons">
+          <!--  Pokemons here  -->
+        </ol>
 
-          <!-- Os números de página serão inseridos dinamicamente -->
-          <li id="pageListContainer">
-            <button class="page-btn" data-page="1">1</button>
-            <button class="page-btn current-page" data-page="2">2</button>
-            <button class="page-btn" data-page="3">3</button>
-            <!-- Pages here -->
-          </li>
+        <nav aria-label="Paginação">
+          <ul class="pagination">
+            <li><button id="firstButton" type="button">First</button></li>
+            <li><button id="previousButton" type="button">Previous</button></li>
 
-          <li><button id="nextButton" type="button">Next</button></li>
-          <li><button id="lastButton" type="button">Last</button></li>
-        </ul>
-      </nav>
-    </section>
+            <!-- Os números de página serão inseridos dinamicamente -->
+            <li id="pageListContainer">
+              <button class="page-btn" data-page="1">1</button>
+              <button class="page-btn current-page" data-page="2">2</button>
+              <button class="page-btn" data-page="3">3</button>
+              <!-- Pages here -->
+            </li>
 
+            <li><button id="nextButton" type="button">Next</button></li>
+            <li><button id="lastButton" type="button">Last</button></li>
+          </ul>
+        </nav>
+      </section>
+
+      <footer id="footer"></footer>
+    </div>
     <!-- Nosso JS -->
-    <script src="assets/js/poke-model.js"></script>
-    <script src="assets/js/poke-api.js"></script>
-    <script src="assets/js/main.js"></script>
+    <script src="assets/js/layout.js" defer></script>
+    <script src="assets/js/poke-model.js" defer></script>
+    <script src="assets/js/poke-api.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
   </body>
 </html>
