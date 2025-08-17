@@ -41,6 +41,17 @@ function getGenIndexFromHash() {
   return null;
 }
 
+// Função para rolar pro topo
+function scrollToTop(smooth = true) {
+  const reduzMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: (smooth && !reduzMovimento) ? 'smooth' : 'auto' });
+}
+
+// Botão flutuante
+document.querySelector('.floatingButton').addEventListener('click', () => {
+  scrollToTop(); // suave
+});
+
 // Delay utilitário para feedback visual
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -101,23 +112,27 @@ async function loadCurrentGeneration(push = true) {
     ...document.querySelectorAll(".page-btn"),
   ].forEach((btn) => (btn.disabled = true));
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToTop(false);
+
   pokemonList.innerHTML = `<li id="loadingIndicator">Carregando...</li>`;
 
   const { name, start: offset, limit } = generationRanges[currentGenIndex];
   const pokemons = await pokeApi.getPokemons(offset, limit);
-  await delay(800);
+  
+  await delay(400);
 
-  generationTitle.textContent = `${currentGenIndex + 1} – ${name}`;
   if (push) {
     location.hash = `/generation/${currentGenIndex + 1}`;
   }
 
+  generationTitle.textContent = `${currentGenIndex + 1} – ${name}`;
   pokemonList.innerHTML = pokemons.map(convertPokemonToLi).join("");
   generationTitle.classList.remove("hidden");
 
   localStorage.setItem("currentGenIndex", currentGenIndex);
   updatePaginationControls();
+
+  scrollToTop();
 }
 
 // Atualiza estados dos botões de Paginação.
