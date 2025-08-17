@@ -5,6 +5,10 @@ const backBtn = document.getElementById("backBtn");
 const loadingIndicator = document.getElementById("loadingIndicator");
 const profileSection = document.getElementById("profile");
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function delay(ms) {
   return new Promise((res) => setTimeout(res, ms));
 }
@@ -14,13 +18,11 @@ async function loadProfile() {
   loadingIndicator.classList.remove("hidden");
   profileSection.classList.add("hidden");
 
-  // fetch do detalhe (usa cache interno)
   const pokemon = await pokeApi.getDetailsPokemon(pokemonName);
 
   // pequeno delay
   await delay(600);
 
-  // limpa classes antigas e adiciona só o tipo atual
   profileSection.className = `profile ${pokemon.type}`;
 
   // preenche o conteúdo
@@ -71,12 +73,10 @@ async function loadProfile() {
     evoTextEl.textContent = "None";
     evoContainer.innerHTML = "";
   } else {
-    evoTextEl.textContent = chain
-      .map((n) => n[0].toUpperCase() + n.slice(1))
-      .join(" → ");
+    evoTextEl.textContent = chain.map(capitalize).join(" → ");
 
     const evoDetails = await Promise.all(
-      chain.map((name) => pokeApi.getDetailsPokemon(name))
+      chain.map((name) => pokeApi.getBasicPokemon(name))
     );
 
     // imagens

@@ -1,7 +1,8 @@
 const BASE_URL = "https://pokeapi.co/api/v2";
 const pokeApi = {};
 
-// Escolhe a melhor imagem.
+
+// Escolhe a melhor imagem disponível
 function getPokemonCover(sprites) {
   return (
     sprites.other?.dream_world?.front_default ||
@@ -11,70 +12,97 @@ function getPokemonCover(sprites) {
   );
 }
 
-// Converte o JSON de /pokemon para instância de Pokemon.
-function convertPokeApiDetailToPokemon(detail) {
-  const pokemon = new Pokemon();
+// Delay utilitário para simular carregamento
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function convertBasic(detail) {
+  const p = new Pokemon();
   const types = detail.types.map((t) => t.type.name);
-  const [type] = types;
-  
-  pokemon.id = detail.id;
-  pokemon.name = detail.name;
-  pokemon.types = types;
-  pokemon.type = type;
-  pokemon.cover = getPokemonCover(detail.sprites);
-  pokemon.weight = detail.weight;
-  pokemon.height = detail.height;
-  pokemon.stats = detail.stats.map((s) => ({
+  p.id = detail.id;
+  p.name = detail.name;
+  p.types = types;
+  p.type = types[0];
+  p.cover = getPokemonCover(detail.sprites);
+  return p;
+}
+
+function convertFull(detail) {
+  const p = convertBasic(detail);
+  p.weight = detail.weight;
+  p.height = detail.height;
+  p.stats = detail.stats.map((s) => ({
     name: s.stat.name,
     value: s.base_stat,
   }));
-  pokemon.abilities = detail.abilities.map((slot) => slot.ability.name);
-  return pokemon;
+  p.abilities = detail.abilities.map((slot) => slot.ability.name);
+  return p;
 }
 
-// Converte o JSON de /evolution-chain para uma lista de strings.
 function parseEvolutions(chainNode, list = []) {
   list.push(chainNode.species.name);
   chainNode.evolves_to.forEach((next) => parseEvolutions(next, list));
   return list;
 }
 
-// Busca detalhes completos.
+
+// Função para listar pokémons (rápida, apenas nome/id/imagem/types)
+pokeApi.getPokemonsBasic = async ({ offset = 0, limit = 20 }) => {
+  const url = `${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const pokemons = await Promise.all(
+    data.results.map(async (p) => {
+      const id = p.url.match(/\/pokemon\/(\d+)\//)[1];
+
+      const detailRes = await fetch(`${BASE_URL}/pokemon/${id}`);
+      const detail = await detailRes.json();
+
+      const types = detail.types.map((t) => t.type.name);
+
+      return {
+        id: Number(id),
+        name: detail.name,
+        types: types,
+        type: types[0],
+        cover: getPokemonCover(detail.sprites)
+      };
+    })
+  );
+
+  return pokemons;
+};
+
+
+// Busca um pokémon básico a partir de nome ou URL
+pokeApi.getBasicPokemon = async (nameOrUrl) => {
+  const url =
+    typeof nameOrUrl === "string"
+      ? `${BASE_URL}/pokemon/${nameOrUrl}`
+      : nameOrUrl.url;
+  const res = await fetch(url);
+  const detail = await res.json();
+  return convertBasic(detail);
+};
+
+// Busca detalhes completos (perfil do pokémon)
 pokeApi.getDetailsPokemon = async (pokemon) => {
   const url =
     typeof pokemon === "string"
       ? `${BASE_URL}/pokemon/${pokemon}`
       : pokemon.url;
 
-  // Detalhes básicos
   const detailRes = await fetch(url);
   const detail = await detailRes.json();
-  const pkm = convertPokeApiDetailToPokemon(detail);
+  const pkm = convertFull(detail);
 
-  // Espécies → evolução
   const speciesRes = await fetch(detail.species.url);
   const species = await speciesRes.json();
   const chainRes = await fetch(species.evolution_chain.url);
   const chainData = await chainRes.json();
+
   pkm.evolutions = parseEvolutions(chainData.chain);
-
   return pkm;
-};
-
-// Lista pokémons + detalhes
-pokeApi.getPokemons = async (offset = 0, limit = 3) => {
-  const apiUrl = `${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`;
-  try {
-    const response = await fetch(apiUrl);
-    const json = await response.json();
-    const results = json.results;
-
-    const detailPromises = results.map(pokeApi.getDetailsPokemon);
-    const pokemons = await Promise.all(detailPromises);
-
-    return pokemons;
-  } catch (err) {
-    console.error("Erro ao buscar lista de pokémons:", err);
-    return [];
-  }
 };
