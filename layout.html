@@ -13,11 +13,13 @@
     <input
       type="search"
       id="search-input"
-      name="name"
       aria-label="Digite o nome do Pokémon para buscar no site"
       required
     />
-    <button type="submit" title="Buscar Pokemon no site">🔍</button>
+    <ul id="search-results" class="search-results hidden"></ul>
+
+    <button id="searchButton" type="submit" title="Buscar Pokemon no site">🔍</button>
+
   </form>
 </header>
 
@@ -44,3 +46,4 @@
     </a>
   </nav>
 </footer>
+

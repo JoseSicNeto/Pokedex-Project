@@ -162,10 +162,6 @@ h2 {
   margin-top: 1rem;
 }
 
-.hidden {
-  display: none;
-}
-
 .floatingButton {
   opacity: .45;
   position: fixed;      
