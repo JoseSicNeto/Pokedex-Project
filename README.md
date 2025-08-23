@@ -1,13 +1,16 @@
-# 📦 Pokedex Web App
+# 📦 Pokedex Web App  
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](#)  
+[![PokeAPI](https://img.shields.io/badge/PokéAPI-v2-blue)](https://pokeapi.co/)  
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)  
+[![Status](https://img.shields.io/badge/status-active-success)](#)  
 
-Aplicação **front-end** que consome a **PokeAPI v2** para exibir Pokémons por gerações, com **perfis detalhados**, **navegação intuitiva** e diversas otimizações de performance.  
-Iniciado como desafio da DIO, o projeto evoluiu para incluir novos recursos, melhorias na UX e ajustes arquiteturais.
+> Uma Pokédex web responsiva, rápida e cheia de recursos, construída com **JavaScript moderno** e consumindo a **PokéAPI v2**.
 
 ---
 
 ## 📑 Sumário
 - [✨ Funcionalidades](#✨-funcionalidades)  
-- [🛠️ Técnologias](#tecnologias)
+- [🛠️ Tecnologias](#🛠️-tecnologias)  
 - [🚀 Instalação](#🚀-instalação)  
 - [📂 Estrutura do Projeto](#📂-estrutura-do-projeto)  
 - [🔍 Exemplos de Uso da API](#🔍-exemplos-de-uso-da-api)  
@@ -21,22 +24,20 @@ Iniciado como desafio da DIO, o projeto evoluiu para incluir novos recursos, mel
 ---
 
 ## ✨ Funcionalidades
-- **Paginação por geração** com botões numéricos e navegação via hash (`#/generation/N`)  
-- **Perfis completos** com peso, altura, tipos, stats, habilidades e cadeia de evolução  
-- **Imagens otimizadas** (dream_world → official-artwork → front_default)  
-- **Responsividade total**: adaptação da paginação e layout para desktop e mobile  
-- **Melhorias de UX**: loader visual, scroll suave e animações leves  
-- **Componentes dinâmicos**:  
-  - Cabeçalho e rodapé padronizados com ícone de logo  
-  - Botão flutuante “voltar ao topo” com rolagem suave  
-  - Sistema de busca validado com exibição de resultados e miniaturas  
+- 📜 **Paginação por geração** com botões numéricos e navegação via hash (`#/generation/N`)  
+- 📄 **Perfis completos** com peso, altura, tipos, stats, habilidades e cadeia de evolução  
+- 🖼️ **Imagens otimizadas** (dream_world → official-artwork → front_default)  
+- 📱 **Responsividade total**: adaptação da paginação e layout para desktop e mobile  
+- 🎯 **Melhorias de UX**: loader visual, scroll suave e animações leves  
+- 🧩 **Componentes dinâmicos**: cabeçalho/rodapé padronizados, botão flutuante “voltar ao topo” e busca validada com miniaturas  
 
 ---
 
-## Tecnologias
-- **HTML5**, **CSS3** (Grid, Flexbox, Transitions)  
+## 🛠️ Tecnologias
+- **HTML5** semântico  
+- **CSS3** (Grid, Flexbox, Transitions)  
 - **JavaScript** (`async/await`, Fetch API, History API)  
-- **PokeAPI v2** → [https://pokeapi.co/](https://pokeapi.co/)  
+- **PokéAPI v2** → [https://pokeapi.co/](https://pokeapi.co/)  
 
 ---
 
@@ -89,7 +90,6 @@ console.log(charizard.evolutions);
 ---
 
 ## 🆕 Novidades
-Inclui as alterações mais recentes:
 1. **Cabeçalho e rodapé dinâmicos** com logo  
 2. **Botão flutuante "voltar ao topo"** com rolagem suave  
 3. **Busca de Pokémons** com cache em memória e miniaturas  
@@ -119,6 +119,8 @@ A divisão de gerações segue a **numeração oficial da Pokédex Nacional**, p
 
 ## 🙏 Agradecimentos
 - **DIO** pelo desafio  
-- **PokeAPI** pela base de dados  
+- **PokéAPI** pela base de dados  
 - Comunidade front-end pelas referências  
 - A mim mesmo por nunca parar de refatorar  
+
+---
