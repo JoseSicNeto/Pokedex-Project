@@ -9,17 +9,17 @@
 ---
 
 ## 📑 Sumário
-- [✨ Funcionalidades](#✨-funcionalidades)  
-- [🛠️ Tecnologias](#🛠️-tecnologias)  
-- [🚀 Instalação](#🚀-instalação)  
-- [📂 Estrutura do Projeto](#📂-estrutura-do-projeto)  
-- [🔍 Exemplos de Uso da API](#🔍-exemplos-de-uso-da-api)  
-- [🎨 Foco no Perfil](#🎨-foco-no-perfil)  
-- [🆕 Novidades](#🆕-novidades)  
+- [✨ Funcionalidades](#-funcionalidades)  
+- [🌐 Tecnologias](#-tecnologias)  
+- [🚀 Instalação](#-instalação)  
+- [📂 Estrutura do Projeto](#-estrutura-do-projeto)  
+- [🔍 Exemplos de Uso da API](#-exemplos-de-uso-da-api)  
+- [🎨 Foco no Perfil](#-foco-no-perfil)  
+- [🆕 Novidades](#-novidades)  
 - [ℹ️ Observações de Gerações](#ℹ️-observações-de-gerações)  
-- [⚡ Possíveis Otimizações](#⚡-possíveis-otimizações)  
-- [📌 Próximos Passos](#📌-próximos-passos)  
-- [🙏 Agradecimentos](#🙏-agradecimentos)  
+- [⚡ Possíveis Otimizações](#-possíveis-otimizações)  
+- [📌 Próximos Passos](#-próximos-passos)  
+- [🙏 Agradecimentos](#-agradecimentos)  
 
 ---
 
@@ -33,7 +33,7 @@
 
 ---
 
-## 🛠️ Tecnologias
+## 🌐 Tecnologias
 - **HTML5** semântico  
 - **CSS3** (Grid, Flexbox, Transitions)  
 - **JavaScript** (`async/await`, Fetch API, History API)  
@@ -124,3 +124,4 @@ A divisão de gerações segue a **numeração oficial da Pokédex Nacional**, p
 - A mim mesmo por nunca parar de refatorar  
 
 ---
+
