@@ -5,34 +5,37 @@ const backBtn = document.getElementById("backBtn");
 const loadingIndicator = document.getElementById("loadingIndicator");
 const profileSection = document.getElementById("profile");
 
-function capitalize(str) {
+
+// Capitaliza a primeira letra de uma string
+function capitalizar(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function delay(ms) {
+// Aguarda um tempo em ms
+function aguardar(ms) {
   return new Promise((res) => setTimeout(res, ms));
 }
 
-async function loadProfile() {
-  // mostra loader, esconde o profile
+
+// Carrega e exibe o perfil do Pokémon
+async function carregarPerfilPokemon() {
+  // Mostra loader e esconde perfil
   loadingIndicator.classList.remove("hidden");
   profileSection.classList.add("hidden");
 
-  const pokemon = await pokeApi.getDetailsPokemon(pokemonName);
+  const pokemon = await pokeApi.buscarPokemonCompleto(pokemonName);
 
-  // pequeno delay
-  await delay(600);
+  // Pequeno delay para suavizar transição
+  await aguardar(600);
 
   profileSection.className = `profile ${pokemon.type}`;
 
-  // preenche o conteúdo
-  document.getElementById(
-    "name"
-  ).textContent = `#${pokemon.id} ${pokemon.name}`;
+  // Nome e imagem
+  document.getElementById("name").textContent = `#${pokemon.id} ${pokemon.name}`;
   document.getElementById("cover").src = pokemon.cover;
   document.getElementById("cover").alt = pokemon.name;
 
-  // tipos
+  // Tipos
   const typesEl = document.getElementById("types");
   typesEl.innerHTML = "";
   pokemon.types.forEach((t) => {
@@ -42,19 +45,14 @@ async function loadProfile() {
     typesEl.appendChild(li);
   });
 
-  // medidas (m e kg)
-  document.getElementById("height").textContent = `${(
-    pokemon.height / 10
-  ).toFixed(2)} m`;
-  document.getElementById("weight").textContent = `${(
-    pokemon.weight / 10
-  ).toFixed(2)} kg`;
+  // Medidas
+  document.getElementById("height").textContent = `${(pokemon.height / 10).toFixed(2)} m`;
+  document.getElementById("weight").textContent = `${(pokemon.weight / 10).toFixed(2)} kg`;
 
-  // habilidades
-  document.getElementById("abilities").textContent =
-    pokemon.abilities.join(", ");
+  // Habilidades
+  document.getElementById("abilities").textContent = pokemon.abilities.join(", ");
 
-  // stats
+  // Valores máximos para cálculo de barra de status
   const MAX_STATS = {
     hp: 255,
     attack: 165,
@@ -64,7 +62,7 @@ async function loadProfile() {
     speed: 160,
   };
 
-  // evolutions
+  // Evoluções
   const evoTextEl = document.getElementById("evolutions");
   const evoContainer = document.getElementById("evolutionChain");
   const chain = pokemon.evolutions || [];
@@ -73,13 +71,12 @@ async function loadProfile() {
     evoTextEl.textContent = "None";
     evoContainer.innerHTML = "";
   } else {
-    evoTextEl.textContent = chain.map(capitalize).join(" → ");
+    evoTextEl.textContent = chain.map(capitalizar).join(" → ");
 
     const evoDetails = await Promise.all(
-      chain.map((name) => pokeApi.getBasicPokemon(name))
+      chain.map((name) => pokeApi.buscarPokemonBasico(name))
     );
 
-    // imagens
     evoContainer.innerHTML = evoDetails
       .map(
         (p) => `
@@ -93,6 +90,7 @@ async function loadProfile() {
       .join("");
   }
 
+  // Estatísticas
   const statsEl = document.getElementById("stats");
   statsEl.innerHTML = "";
 
@@ -111,11 +109,13 @@ async function loadProfile() {
     statsEl.appendChild(li);
   });
 
-  // esconde loader, mostra perfil
+  // Esconde loader e mostra perfil
   loadingIndicator.classList.add("hidden");
   profileSection.classList.remove("hidden");
 }
 
+// Botão de voltar
 backBtn.addEventListener("click", () => history.back());
 
-loadProfile();
+// Inicialização
+carregarPerfilPokemon();

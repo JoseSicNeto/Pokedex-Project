@@ -1,3 +1,4 @@
+// Faixas de gerações de Pokémon
 const generationRanges = [
   { name: "Kanto", start: 0, limit: 151 },
   { name: "Johto", start: 151, limit: 100 },
@@ -10,7 +11,7 @@ const generationRanges = [
   { name: "Paldea", start: 905, limit: 105 },
 ];
 
-// Seleção de elementos do DOM
+// Elementos do DOM
 const pokemonList = document.getElementById("pokemonList");
 const generationTitle = document.getElementById("generationTitle");
 const firstButton = document.getElementById("firstButton");
@@ -20,15 +21,20 @@ const lastButton = document.getElementById("lastButton");
 const pageListContainer = document.getElementById("pageListContainer");
 
 
+// Verifica se é mobile
 function isMobile() {
   return window.innerWidth < 600;
 }
 
-function getWindowSize() {
+
+// Retorna tamanho da janela de paginação
+function getPaginationWindowSize() {
   return isMobile() ? 1 : 3;
 }
 
-function getGenIndexFromHash() {
+
+// Obtém índice da geração a partir do hash da URL
+function getGenerationIndexFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, "");
   const parts = hash.split("/");
   if (parts[0] === "generation") {
@@ -40,16 +46,22 @@ function getGenIndexFromHash() {
   return null;
 }
 
+
+// Rola para o topo da página
 function scrollToTop(smooth = true) {
-  const reduzMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  window.scrollTo({ top: 0, behavior: (smooth && !reduzMovimento) ? 'smooth' : 'auto' });
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: (smooth && !reducedMotion) ? 'smooth' : 'auto' });
 }
 
-function delay(ms) {
+
+// Aguarda um tempo em ms
+function aguardar(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function convertPokemonToLi(pokemon) {
+
+// Converte objeto Pokémon para HTML de lista
+function criarItemPokemonHTML(pokemon) {
   const typesHtml = pokemon.types
     ? pokemon.types.map((t) => `<li class="type ${t}">${t}</li>`).join("")
     : "";
@@ -69,9 +81,11 @@ function convertPokemonToLi(pokemon) {
     </li>`;
 }
 
-function renderPageButtons() {
+
+// Renderiza botões de paginação
+function renderizarBotoesPaginacao() {
   const total = generationRanges.length;
-  const windowSize = getWindowSize();
+  const windowSize = getPaginationWindowSize();
   const start = Math.max(0, currentGenIndex - windowSize);
   const end = Math.min(total - 1, currentGenIndex + windowSize);
 
@@ -84,17 +98,18 @@ function renderPageButtons() {
     btn.dataset.index = idx;
     btn.addEventListener("click", () => {
       currentGenIndex = idx;
-      loadCurrentGeneration();
+      carregarGeracaoAtual();
     });
     pageListContainer.append(btn);
   }
 }
 
-// Carregamento da Geração
-async function loadCurrentGeneration(push = true) {
+
+// Carrega a geração atual de Pokémon
+async function carregarGeracaoAtual(push = true) {
   generationTitle.classList.add("hidden");
 
-  // Desativa botões
+  // Desativa botões durante carregamento
   [
     firstButton,
     previousButton,
@@ -106,26 +121,28 @@ async function loadCurrentGeneration(push = true) {
   scrollToTop(false);
   pokemonList.innerHTML = `<li id="loadingIndicator">Carregando...</li>`;
 
-  // Busca da geração
+  // Busca dados da geração
   const { name, start: offset, limit } = generationRanges[currentGenIndex];
-  const pokemons = await pokeApi.getPokemonsBasic({ offset, limit });
+  const pokemons = await pokeApi.listarPokemonsBasicos({ offset, limit });
 
-  await delay(400);
+  await aguardar(400);
 
   if (push) {
     location.hash = `/generation/${currentGenIndex + 1}`;
   }
 
   generationTitle.textContent = `${currentGenIndex + 1} – ${name}`;
-  pokemonList.innerHTML = pokemons.map(convertPokemonToLi).join("");
+  pokemonList.innerHTML = pokemons.map(criarItemPokemonHTML).join("");
   generationTitle.classList.remove("hidden");
 
   localStorage.setItem("currentGenIndex", currentGenIndex);
-  updatePaginationControls();
+  atualizarControlesPaginacao();
   scrollToTop();
 }
 
-function updatePaginationControls() {
+
+// Atualiza estado dos botões de paginação
+function atualizarControlesPaginacao() {
   const isFirst = currentGenIndex === 0;
   const isLast = currentGenIndex === generationRanges.length - 1;
 
@@ -134,7 +151,7 @@ function updatePaginationControls() {
   nextButton.disabled = isLast;
   lastButton.disabled = isLast;
 
-  renderPageButtons();
+  renderizarBotoesPaginacao();
   document.querySelectorAll(".page-btn").forEach((btn) => {
     const idx = Number(btn.dataset.index);
     btn.disabled = false;
@@ -142,54 +159,56 @@ function updatePaginationControls() {
   });
 }
 
-
-// Eventos e Navegação
+// Eventos de navegação
 firstButton.addEventListener("click", () => {
   currentGenIndex = 0;
-  loadCurrentGeneration();
+  carregarGeracaoAtual();
 });
+
 previousButton.addEventListener("click", () => {
   if (currentGenIndex > 0) {
     currentGenIndex--;
-    loadCurrentGeneration();
+    carregarGeracaoAtual();
   }
 });
+
 nextButton.addEventListener("click", () => {
   if (currentGenIndex < generationRanges.length - 1) {
     currentGenIndex++;
-    loadCurrentGeneration();
+    carregarGeracaoAtual();
   }
 });
+
 lastButton.addEventListener("click", () => {
   currentGenIndex = generationRanges.length - 1;
-  loadCurrentGeneration();
+  carregarGeracaoAtual();
 });
+
 document.querySelector(".floatingButton").addEventListener("click", () => {
   scrollToTop();
 });
-window.addEventListener("resize", updatePaginationControls);
+
+window.addEventListener("resize", atualizarControlesPaginacao);
+
 window.addEventListener("hashchange", () => {
-  const idx = getGenIndexFromHash();
+  const idx = getGenerationIndexFromHash();
   if (idx !== null && idx !== currentGenIndex) {
     currentGenIndex = idx;
-    loadCurrentGeneration(false);
+    carregarGeracaoAtual(false);
   }
 });
 
-
 // Inicialização
-const hashIndex = getGenIndexFromHash();
+const hashIndex = getGenerationIndexFromHash();
 const savedIndex = parseInt(localStorage.getItem("currentGenIndex"), 10);
 
 let currentGenIndex;
 if (hashIndex !== null) {
   currentGenIndex = hashIndex;
-} else if (!isNaN(savedIndex) &&
-           savedIndex >= 0 &&
-           savedIndex < generationRanges.length) {
+} else if (!isNaN(savedIndex) && savedIndex >= 0 && savedIndex < generationRanges.length) {
   currentGenIndex = savedIndex;
 } else {
   currentGenIndex = 0;
 }
 
-loadCurrentGeneration();
+carregarGeracaoAtual();
