@@ -20,21 +20,20 @@ const nextButton = document.getElementById("nextButton");
 const lastButton = document.getElementById("lastButton");
 const pageListContainer = document.getElementById("pageListContainer");
 
-
 // Verifica se é mobile
-function isMobile() {
+function ehMobile() {
   return window.innerWidth < 600;
 }
 
 
 // Retorna tamanho da janela de paginação
-function getPaginationWindowSize() {
-  return isMobile() ? 1 : 3;
+function obterTamanhoJanelaPaginacao() {
+  return ehMobile() ? 1 : 3;
 }
 
 
 // Obtém índice da geração a partir do hash da URL
-function getGenerationIndexFromHash() {
+function obterIndiceGeracaoDoHash() {
   const hash = window.location.hash.replace(/^#\/?/, "");
   const parts = hash.split("/");
   if (parts[0] === "generation") {
@@ -48,9 +47,9 @@ function getGenerationIndexFromHash() {
 
 
 // Rola para o topo da página
-function scrollToTop(smooth = true) {
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  window.scrollTo({ top: 0, behavior: (smooth && !reducedMotion) ? 'smooth' : 'auto' });
+function rolarParaTopo(smooth = true) {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: smooth && !reducedMotion ? "smooth" : "auto" });
 }
 
 
@@ -61,7 +60,7 @@ function aguardar(ms) {
 
 
 // Converte objeto Pokémon para HTML de lista
-function criarItemPokemonHTML(pokemon) {
+function criarItemPokemonHtml(pokemon) {
   const typesHtml = pokemon.types
     ? pokemon.types.map((t) => `<li class="type ${t}">${t}</li>`).join("")
     : "";
@@ -85,7 +84,7 @@ function criarItemPokemonHTML(pokemon) {
 // Renderiza botões de paginação
 function renderizarBotoesPaginacao() {
   const total = generationRanges.length;
-  const windowSize = getPaginationWindowSize();
+  const windowSize = obterTamanhoJanelaPaginacao();
   const start = Math.max(0, currentGenIndex - windowSize);
   const end = Math.min(total - 1, currentGenIndex + windowSize);
 
@@ -118,7 +117,7 @@ async function carregarGeracaoAtual(push = true) {
     ...document.querySelectorAll(".page-btn"),
   ].forEach((btn) => (btn.disabled = true));
 
-  scrollToTop(false);
+  rolarParaTopo(false);
   pokemonList.innerHTML = `<li id="loadingIndicator">Carregando...</li>`;
 
   // Busca dados da geração
@@ -132,12 +131,12 @@ async function carregarGeracaoAtual(push = true) {
   }
 
   generationTitle.textContent = `${currentGenIndex + 1} – ${name}`;
-  pokemonList.innerHTML = pokemons.map(criarItemPokemonHTML).join("");
+  pokemonList.innerHTML = pokemons.map(criarItemPokemonHtml).join("");
   generationTitle.classList.remove("hidden");
 
   localStorage.setItem("currentGenIndex", currentGenIndex);
   atualizarControlesPaginacao();
-  scrollToTop();
+  rolarParaTopo();
 }
 
 
@@ -158,6 +157,7 @@ function atualizarControlesPaginacao() {
     btn.classList.toggle("current-page", idx === currentGenIndex);
   });
 }
+
 
 // Eventos de navegação
 firstButton.addEventListener("click", () => {
@@ -185,13 +185,13 @@ lastButton.addEventListener("click", () => {
 });
 
 document.querySelector(".floatingButton").addEventListener("click", () => {
-  scrollToTop();
+  rolarParaTopo();
 });
 
 window.addEventListener("resize", atualizarControlesPaginacao);
 
 window.addEventListener("hashchange", () => {
-  const idx = getGenerationIndexFromHash();
+  const idx = obterIndiceGeracaoDoHash();
   if (idx !== null && idx !== currentGenIndex) {
     currentGenIndex = idx;
     carregarGeracaoAtual(false);
@@ -199,7 +199,7 @@ window.addEventListener("hashchange", () => {
 });
 
 // Inicialização
-const hashIndex = getGenerationIndexFromHash();
+const hashIndex = obterIndiceGeracaoDoHash();
 const savedIndex = parseInt(localStorage.getItem("currentGenIndex"), 10);
 
 let currentGenIndex;

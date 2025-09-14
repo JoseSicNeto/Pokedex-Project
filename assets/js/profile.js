@@ -1,34 +1,34 @@
-const params = new URLSearchParams(window.location.search);
-const pokemonName = params.get("name") || params.get("id");
+const urlParams = new URLSearchParams(window.location.search);
+const pokemonNome = urlParams.get("name") || urlParams.get("id");
 
-const backBtn = document.getElementById("backBtn");
-const loadingIndicator = document.getElementById("loadingIndicator");
-const profileSection = document.getElementById("profile");
-
+const botaoVoltar = document.getElementById("backBtn");
+const indicadorCarregando = document.getElementById("loadingIndicator");
+const secaoPerfil = document.getElementById("profile");
 
 // Capitaliza a primeira letra de uma string
-function capitalizar(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function capitalizar(texto) {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
+
 
 // Aguarda um tempo em ms
 function aguardar(ms) {
-  return new Promise((res) => setTimeout(res, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 
 // Carrega e exibe o perfil do Pokémon
 async function carregarPerfilPokemon() {
   // Mostra loader e esconde perfil
-  loadingIndicator.classList.remove("hidden");
-  profileSection.classList.add("hidden");
+  indicadorCarregando.classList.remove("hidden");
+  secaoPerfil.classList.add("hidden");
 
-  const pokemon = await pokeApi.buscarPokemonCompleto(pokemonName);
+  const pokemon = await pokeApi.buscarPokemonCompleto(pokemonNome);
 
   // Pequeno delay para suavizar transição
   await aguardar(600);
 
-  profileSection.className = `profile ${pokemon.type}`;
+  secaoPerfil.className = `profile ${pokemon.type}`;
 
   // Nome e imagem
   document.getElementById("name").textContent = `#${pokemon.id} ${pokemon.name}`;
@@ -36,13 +36,13 @@ async function carregarPerfilPokemon() {
   document.getElementById("cover").alt = pokemon.name;
 
   // Tipos
-  const typesEl = document.getElementById("types");
-  typesEl.innerHTML = "";
-  pokemon.types.forEach((t) => {
+  const tiposElemento = document.getElementById("types");
+  tiposElemento.innerHTML = "";
+  pokemon.types.forEach((tipo) => {
     const li = document.createElement("li");
-    li.className = `type ${t}`;
-    li.textContent = t;
-    typesEl.appendChild(li);
+    li.className = `type ${tipo}`;
+    li.textContent = tipo;
+    tiposElemento.appendChild(li);
   });
 
   // Medidas
@@ -53,7 +53,7 @@ async function carregarPerfilPokemon() {
   document.getElementById("abilities").textContent = pokemon.abilities.join(", ");
 
   // Valores máximos para cálculo de barra de status
-  const MAX_STATS = {
+  const maxStats = {
     hp: 255,
     attack: 165,
     defense: 230,
@@ -63,59 +63,60 @@ async function carregarPerfilPokemon() {
   };
 
   // Evoluções
-  const evoTextEl = document.getElementById("evolutions");
-  const evoContainer = document.getElementById("evolutionChain");
-  const chain = pokemon.evolutions || [];
+  const evolucaoTextoElemento = document.getElementById("evolutions");
+  const evolucaoContainer = document.getElementById("evolutionChain");
+  const cadeiaEvolucao = pokemon.evolutions || [];
 
-  if (chain.length <= 1) {
-    evoTextEl.textContent = "None";
-    evoContainer.innerHTML = "";
+  if (cadeiaEvolucao.length <= 1) {
+    evolucaoTextoElemento.textContent = "None";
+    evolucaoContainer.innerHTML = "";
   } else {
-    evoTextEl.textContent = chain.map(capitalizar).join(" → ");
+    evolucaoTextoElemento.textContent = cadeiaEvolucao.map(capitalizar).join(" → ");
 
-    const evoDetails = await Promise.all(
-      chain.map((name) => pokeApi.buscarPokemonBasico(name))
+    const detalhesEvolucao = await Promise.all(
+      cadeiaEvolucao.map((nome) => pokeApi.buscarPokemonBasico(nome))
     );
 
-    evoContainer.innerHTML = evoDetails
+    evolucaoContainer.innerHTML = detalhesEvolucao
       .map(
         (p) => `
-    <a href="pokemon.html?name=${p.name}" class="evo-card">
-      <img src="${p.cover}" alt="${p.name}" />
-      <span>#${p.id}</span>
-      <span>${p.name}</span>
-    </a>
-  `
+          <a href="pokemon.html?name=${p.name}" class="evo-card">
+            <img src="${p.cover}" alt="${p.name}" />
+            <span>#${p.id}</span>
+            <span>${p.name}</span>
+          </a>
+        `
       )
       .join("");
   }
 
   // Estatísticas
-  const statsEl = document.getElementById("stats");
-  statsEl.innerHTML = "";
+  const statsElemento = document.getElementById("stats");
+  statsElemento.innerHTML = "";
 
-  pokemon.stats.forEach((s) => {
-    const max = MAX_STATS[s.name] || 100;
-    const pct = Math.round((s.value / max) * 100);
+  pokemon.stats.forEach((stat) => {
+    const max = maxStats[stat.name] || 100;
+    const porcentagem = Math.round((stat.value / max) * 100);
 
     const li = document.createElement("li");
     li.innerHTML = `
-      <strong>${s.name}</strong>
+      <strong>${stat.name}</strong>
       <div class="stat-bar">
-        <div class="stat-fill ${pokemon.type}" style="width: ${pct}%"></div>
-        <span class="stat-number">${s.value}</span>
+        <div class="stat-fill ${pokemon.type}" style="width: ${porcentagem}%"></div>
+        <span class="stat-number">${stat.value}</span>
       </div>
     `;
-    statsEl.appendChild(li);
+    statsElemento.appendChild(li);
   });
 
   // Esconde loader e mostra perfil
-  loadingIndicator.classList.add("hidden");
-  profileSection.classList.remove("hidden");
+  indicadorCarregando.classList.add("hidden");
+  secaoPerfil.classList.remove("hidden");
 }
 
+
 // Botão de voltar
-backBtn.addEventListener("click", () => history.back());
+botaoVoltar.addEventListener("click", () => history.back());
 
 // Inicialização
 carregarPerfilPokemon();

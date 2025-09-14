@@ -14,20 +14,20 @@ function obterImagemPokemon(sprites) {
 
 
 // Busca detalhes completos de um Pokémon por ID ou nome
-async function fetchPokemonDetail(identifier) {
+async function buscarDetalhesPokemon(identifier) {
   const res = await fetch(`${BASE_URL}/pokemon/${identifier}`);
   return res.json();
 }
 
 
 // Extrai o ID numérico da URL da API
-function extractPokemonIdFromUrl(url) {
+function extrairIdPokemonDaUrl(url) {
   return Number(url.match(/\/pokemon\/(\d+)\//)[1]);
 }
 
 
 // Busca e retorna a cadeia de evolução a partir do objeto detail
-async function fetchEvolutionChain(detail) {
+async function buscarCadeiaEvolucao(detail) {
   const speciesRes = await fetch(detail.species.url);
   const species = await speciesRes.json();
   const chainRes = await fetch(species.evolution_chain.url);
@@ -76,8 +76,8 @@ pokeApi.listarPokemonsBasicos = async ({ offset = 0, limit = 20 }) => {
 
   return Promise.all(
     data.results.map(async (p) => {
-      const id = extractPokemonIdFromUrl(p.url);
-      const detail = await fetchPokemonDetail(id);
+      const id = extrairIdPokemonDaUrl(p.url);
+      const detail = await buscarDetalhesPokemon(id);
       return converterParaBasico(detail);
     })
   );
@@ -89,8 +89,8 @@ pokeApi.buscarPokemonBasico = async (nameOrUrl) => {
   const identifier =
     typeof nameOrUrl === "string"
       ? nameOrUrl
-      : extractPokemonIdFromUrl(nameOrUrl.url);
-  const detail = await fetchPokemonDetail(identifier);
+      : extrairIdPokemonDaUrl(nameOrUrl.url);
+  const detail = await buscarDetalhesPokemon(identifier);
   return converterParaBasico(detail);
 };
 
@@ -98,13 +98,11 @@ pokeApi.buscarPokemonBasico = async (nameOrUrl) => {
 // Busca detalhes completos de um Pokémon
 pokeApi.buscarPokemonCompleto = async (pokemon) => {
   const identifier =
-    typeof pokemon === "string"
-      ? pokemon
-      : extractPokemonIdFromUrl(pokemon.url);
+    typeof pokemon === "string" ? pokemon : extrairIdPokemonDaUrl(pokemon.url);
 
-  const detail = await fetchPokemonDetail(identifier);
+  const detail = await buscarDetalhesPokemon(identifier);
   const pokemonCompleto = converterParaCompleto(detail);
-  pokemonCompleto.evolutions = await fetchEvolutionChain(detail);
+  pokemonCompleto.evolutions = await buscarCadeiaEvolucao(detail);
 
   return pokemonCompleto;
 };
