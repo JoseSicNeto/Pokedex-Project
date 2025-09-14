@@ -13,13 +13,29 @@ function obterImagemPokemon(sprites) {
 }
 
 
-// Função utilitária para simular atraso
-function aguardar(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+// Busca detalhes completos de um Pokémon por ID ou nome
+async function fetchPokemonDetail(identifier) {
+  const res = await fetch(`${BASE_URL}/pokemon/${identifier}`);
+  return res.json();
 }
 
 
-// Converte dados básicos da API para o modelo Pokemon
+// Extrai o ID numérico da URL da API
+function extractPokemonIdFromUrl(url) {
+  return Number(url.match(/\/pokemon\/(\d+)\//)[1]);
+}
+
+
+// Busca e retorna a cadeia de evolução a partir do objeto detail
+async function fetchEvolutionChain(detail) {
+  const speciesRes = await fetch(detail.species.url);
+  const species = await speciesRes.json();
+  const chainRes = await fetch(species.evolution_chain.url);
+  const chainData = await chainRes.json();
+  return extrairEvolucoes(chainData.chain);
+}
+
+
 function converterParaBasico(detail) {
   const pokemon = new Pokemon();
   const types = detail.types.map((t) => t.type.name);
@@ -32,7 +48,6 @@ function converterParaBasico(detail) {
 }
 
 
-// Converte dados completos da API para o modelo Pokemon
 function converterParaCompleto(detail) {
   const pokemon = converterParaBasico(detail);
   pokemon.weight = detail.weight;
@@ -46,7 +61,6 @@ function converterParaCompleto(detail) {
 }
 
 
-// Lê a cadeia de evolução e retorna lista de nomes
 function extrairEvolucoes(chainNode, list = []) {
   list.push(chainNode.species.name);
   chainNode.evolves_to.forEach((next) => extrairEvolucoes(next, list));
@@ -60,55 +74,37 @@ pokeApi.listarPokemonsBasicos = async ({ offset = 0, limit = 20 }) => {
   const res = await fetch(url);
   const data = await res.json();
 
-  const pokemons = await Promise.all(
+  return Promise.all(
     data.results.map(async (p) => {
-      const id = p.url.match(/\/pokemon\/(\d+)\//)[1];
-      const detailRes = await fetch(`${BASE_URL}/pokemon/${id}`);
-      const detail = await detailRes.json();
-      const types = detail.types.map((t) => t.type.name);
-
-      return {
-        id: Number(id),
-        name: detail.name,
-        types: types,
-        type: types[0],
-        cover: obterImagemPokemon(detail.sprites)
-      };
+      const id = extractPokemonIdFromUrl(p.url);
+      const detail = await fetchPokemonDetail(id);
+      return converterParaBasico(detail);
     })
   );
-
-  return pokemons;
 };
 
 
 // Busca um Pokémon básico a partir do nome ou URL
 pokeApi.buscarPokemonBasico = async (nameOrUrl) => {
-  const url =
+  const identifier =
     typeof nameOrUrl === "string"
-      ? `${BASE_URL}/pokemon/${nameOrUrl}`
-      : nameOrUrl.url;
-  const res = await fetch(url);
-  const detail = await res.json();
+      ? nameOrUrl
+      : extractPokemonIdFromUrl(nameOrUrl.url);
+  const detail = await fetchPokemonDetail(identifier);
   return converterParaBasico(detail);
 };
 
 
 // Busca detalhes completos de um Pokémon
 pokeApi.buscarPokemonCompleto = async (pokemon) => {
-  const url =
+  const identifier =
     typeof pokemon === "string"
-      ? `${BASE_URL}/pokemon/${pokemon}`
-      : pokemon.url;
+      ? pokemon
+      : extractPokemonIdFromUrl(pokemon.url);
 
-  const detailRes = await fetch(url);
-  const detail = await detailRes.json();
+  const detail = await fetchPokemonDetail(identifier);
   const pokemonCompleto = converterParaCompleto(detail);
+  pokemonCompleto.evolutions = await fetchEvolutionChain(detail);
 
-  const speciesRes = await fetch(detail.species.url);
-  const species = await speciesRes.json();
-  const chainRes = await fetch(species.evolution_chain.url);
-  const chainData = await chainRes.json();
-
-  pokemonCompleto.evolutions = extrairEvolucoes(chainData.chain);
   return pokemonCompleto;
 };
