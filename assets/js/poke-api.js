@@ -1,7 +1,6 @@
 const BASE_URL = "https://pokeapi.co/api/v2";
 const pokeApi = {};
 
-
 // Retorna a melhor imagem disponível do Pokémon
 function obterImagemPokemon(sprites) {
   return (
@@ -36,6 +35,7 @@ async function buscarCadeiaEvolucao(detail) {
 }
 
 
+// Converte dados básicos da API para o modelo Pokemon
 function converterParaBasico(detail) {
   const pokemon = new Pokemon();
   const types = detail.types.map((t) => t.type.name);
@@ -48,6 +48,7 @@ function converterParaBasico(detail) {
 }
 
 
+// Converte dados completos da API para o modelo Pokemon
 function converterParaCompleto(detail) {
   const pokemon = converterParaBasico(detail);
   pokemon.weight = detail.weight;
@@ -61,10 +62,49 @@ function converterParaCompleto(detail) {
 }
 
 
+// Extrai nomes de todas as evoluções
 function extrairEvolucoes(chainNode, list = []) {
   list.push(chainNode.species.name);
   chainNode.evolves_to.forEach((next) => extrairEvolucoes(next, list));
   return list;
+}
+
+
+async function buscarPokemonsEmLotes(ids, callbackConversao) {
+  let tamanhoLote = 20; // tamanho inicial
+  const resultados = [];
+  let i = 0;
+
+  while (i < ids.length) {
+    const loteAtual = tamanhoLote;
+    const lote = ids.slice(i, i + loteAtual);
+
+    const inicioLote = performance.now();
+
+    const detalhesLote = await Promise.all(
+      lote.map(async (id) => {
+        const detail = await buscarDetalhesPokemon(id);
+        return callbackConversao(detail);
+      })
+    );
+
+    resultados.push(...detalhesLote);
+
+    const fimLote = performance.now();
+    const tempoLote = (fimLote - inicioLote) / 1000; // segundos
+
+    // Ajusta tamanho do próximo lote com base no tempo real
+    if (tempoLote < 1.5 && tamanhoLote < 50) {
+      tamanhoLote += 5;
+    } else if (tempoLote > 3 && tamanhoLote > 5) {
+      tamanhoLote -= 5;
+    }
+
+    i += loteAtual;
+    await new Promise((r) => setTimeout(r, 150)); // pausa leve
+  }
+
+  return resultados;
 }
 
 
@@ -73,14 +113,9 @@ pokeApi.listarPokemonsBasicos = async ({ offset = 0, limit = 20 }) => {
   const url = `${BASE_URL}/pokemon?offset=${offset}&limit=${limit}`;
   const res = await fetch(url);
   const data = await res.json();
+  const ids = data.results.map((p) => extrairIdPokemonDaUrl(p.url));
 
-  return Promise.all(
-    data.results.map(async (p) => {
-      const id = extrairIdPokemonDaUrl(p.url);
-      const detail = await buscarDetalhesPokemon(id);
-      return converterParaBasico(detail);
-    })
-  );
+  return buscarPokemonsEmLotes(ids, converterParaBasico);
 };
 
 
@@ -90,8 +125,9 @@ pokeApi.buscarPokemonBasico = async (nameOrUrl) => {
     typeof nameOrUrl === "string"
       ? nameOrUrl
       : extrairIdPokemonDaUrl(nameOrUrl.url);
-  const detail = await buscarDetalhesPokemon(identifier);
-  return converterParaBasico(detail);
+
+  const [resultado] = await buscarPokemonsEmLotes([identifier], converterParaBasico);
+  return resultado;
 };
 
 
@@ -100,9 +136,8 @@ pokeApi.buscarPokemonCompleto = async (pokemon) => {
   const identifier =
     typeof pokemon === "string" ? pokemon : extrairIdPokemonDaUrl(pokemon.url);
 
-  const detail = await buscarDetalhesPokemon(identifier);
-  const pokemonCompleto = converterParaCompleto(detail);
-  pokemonCompleto.evolutions = await buscarCadeiaEvolucao(detail);
+  const [pokemonCompleto] = await buscarPokemonsEmLotes([identifier], converterParaCompleto);
+  pokemonCompleto.evolutions = await buscarCadeiaEvolucao(await buscarDetalhesPokemon(identifier));
 
   return pokemonCompleto;
 };
