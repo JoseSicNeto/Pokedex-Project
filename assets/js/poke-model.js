@@ -1,12 +1,13 @@
 class Pokemon {
-    id;
-    name;
-    type;
+    id = null;
+    name = "";
+    type = "";
     types = [];
-    cover;
-    weight;
-    height;
-    stats = []
-    evolutions = []
+    cover = "";
+    weight = null;
+    height = null;
+    stats = [];
+    evolutions = [];
     abilities = [];
 }
+  
