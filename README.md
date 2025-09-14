@@ -93,7 +93,9 @@ console.log(charizard.evolutions);
 1. **Cabeçalho e rodapé dinâmicos** com logo  
 2. **Botão flutuante "voltar ao topo"** com rolagem suave  
 3. **Busca de Pokémons** com cache em memória e miniaturas  
-4. **Otimização da API** com método `getPokemonsBasic` para listagens mais rápidas  
+4. **Otimização da API** com método `getPokemonsBasic` para listagens mais rápidas
+5. **Dynamic batch loading** na API para melhorar estabilidade e performance em grandes listas (ex.: geração Kanto)
+
 
 ---
 
@@ -124,4 +126,5 @@ A divisão de gerações segue a **numeração oficial da Pokédex Nacional**, p
 - A mim mesmo por nunca parar de refatorar  
 
 ---
+
 
